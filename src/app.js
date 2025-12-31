@@ -65,7 +65,19 @@ app.get(/.*fly$/, (req, res) => {
 })
 
 
+// ! How to get query params
+// * http:localhost:3000/user?userID=5&pwd="testing"
+app.get('/user', (req, res) => {
+    console.log(req.query) // will get the {userID : '5', pwd : 'testing} from the query
+    res.send("User")
+})
 
+// ! How to get dynamic apis - PARAMS
+// * http:localhost:3000/user
+app.get('/user/:userID/:name/:password', (req, res) => {
+    console.log(req.params)
+    res.send("User")
+})
 
 
 app.listen(3000, () => {
