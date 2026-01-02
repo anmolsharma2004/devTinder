@@ -119,6 +119,20 @@ app.get('/admin/deleteUser', (req, res) => {
 
 
 
+//  ! Handling errors
+
+app.use('/', (err, req, res, next) => {
+    //  always use try and catch block while writing logic
+    if (err) {
+        res.status(500)
+           .send("Something went wrong")
+    }
+})
+
+
+
+
+
 
 
 app.listen(3000, () => {
