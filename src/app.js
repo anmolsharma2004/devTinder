@@ -1,5 +1,7 @@
 const express = require("express");
 
+const { adminAuth } = require("./middlewares/auth")
+
 const app = express();
 
 // ! routes order matter a lot
@@ -98,15 +100,15 @@ app.use('/users',
 
 
 // ! Handle Auth Middleware for all requests(GET, POST, PUT etc.)
-app.use('/admin', (req, res, next) => {
-    const token = "xyz";
-    const isAuth = (token === 'xyz');
+// app.use('/admin', (req, res, next) => {
+//     const token = "xyz";
+//     const isAuth = (token === 'xyz');
 
-    if (!isAuth) res.status(401).send("Unauthorized")
-    else next();
-})
+//     if (!isAuth) res.status(401).send("Unauthorized")
+//     else next();
+// })
 
-app.get('/admin/getAllData', (req, res) => {
+app.get('/admin/getAllData', adminAuth, (req, res) => {
     console.log("getting all data");
     res.send("Get all data")
 })
@@ -114,6 +116,8 @@ app.get('/admin/getAllData', (req, res) => {
 app.get('/admin/deleteUser', (req, res) => {
     res.send("Deleted a User")
 })
+
+
 
 
 
