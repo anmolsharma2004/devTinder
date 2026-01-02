@@ -106,6 +106,15 @@ app.use('/admin', (req, res, next) => {
     else next();
 })
 
+app.get('/admin/getAllData', (req, res) => {
+    console.log("getting all data");
+    res.send("Get all data")
+})
+
+app.get('/admin/deleteUser', (req, res) => {
+    res.send("Deleted a User")
+})
+
 
 
 app.listen(3000, () => {
