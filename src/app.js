@@ -1,5 +1,9 @@
 const express = require("express");
 
+const {connectDB} = require("./config/database")
+
+const UserModel = require("./models/user")
+
 const { adminAuth } = require("./middlewares/auth")
 
 const app = express();
@@ -99,6 +103,8 @@ app.use('/users',
 
 
 
+
+
 // ! Handle Auth Middleware for all requests(GET, POST, PUT etc.)
 // app.use('/admin', (req, res, next) => {
 //     const token = "xyz";
@@ -119,6 +125,26 @@ app.get('/admin/deleteUser', (req, res) => {
 
 
 
+// ! sign-up
+app.post("/signup", async (req, res) => {
+    // dummy data
+    const userObj = {
+        firstName : "ANmol",
+        lastName : "Sharma",
+        email: "anmol@gmail.com",
+        password : "Anmol123"
+    }
+    
+    //  creating a new instance of the UserModel model
+    const user = new UserModel(userObj)
+
+    //  saving the userObj in the database
+    await user.save();
+
+    res.send("User added successfully")
+});
+
+
 //  ! Handling errors
 
 app.use('/', (err, req, res, next) => {
@@ -135,6 +161,18 @@ app.use('/', (err, req, res, next) => {
 
 
 
-app.listen(3000, () => {
-    console.log("Server is listening on port 3000")
-})
+// ! First we should connect to DB then only the server should start
+connectDB()
+    .then(() => {
+        console.log("Database connected successful");
+        app.listen(3000, () => {
+            console.log("Server is listening on port 3000");
+        })
+    })
+    .catch((err) => {
+        console.log(err)
+        console.log("Database cannot be connnected");
+    }); 
+
+
+
