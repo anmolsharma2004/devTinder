@@ -149,6 +149,19 @@ app.post("/signup", async (req, res) => {
     res.send("User added successfully")
 });
 
+app.get("/userGet", async(req, res) => {
+    const userEmail = req.body.emailID;
+
+    try {
+        const user = await UserModel.find({email: userEmail});
+        res.send(user)
+    }
+    catch(err){
+        res.status(401)
+           .send("Something went wrong")
+    }
+
+})
 
 //  ! Handling errors
 
