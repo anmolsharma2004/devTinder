@@ -128,12 +128,13 @@ app.get('/admin/deleteUser', (req, res) => {
 // ! sign-up
 app.post("/signup", async (req, res) => {
     // dummy data
-    const userObj = {
+    
+    const userObj = new UserModel({
         firstName : "ANmol",
         lastName : "Sharma",
         email: "anmol@gmail.com",
         password : "Anmol123"
-    }
+    })
     
     //  creating a new instance of the UserModel model
     const user = new UserModel(userObj)
