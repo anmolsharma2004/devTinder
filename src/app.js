@@ -7,6 +7,7 @@ const UserModel = require("./models/user")
 const { adminAuth } = require("./middlewares/auth")
 
 const app = express();
+app.use(express.json());
 
 // ! routes order matter a lot
 // app.use('/test', (req, res) => {
@@ -129,12 +130,15 @@ app.get('/admin/deleteUser', (req, res) => {
 app.post("/signup", async (req, res) => {
     // dummy data
     
-    const userObj = new UserModel({
-        firstName : "ANmol",
-        lastName : "Sharma",
-        email: "anmol@gmail.com",
-        password : "Anmol123"
-    })
+    const userObj = new UserModel(
+        // {
+        // firstName : "ANmol",
+        // lastName : "Sharma",
+        // email: "anmol@gmail.com",
+        // password : "Anmol123"
+        // }
+        req.body
+    );
     
     //  creating a new instance of the UserModel model
     const user = new UserModel(userObj)
