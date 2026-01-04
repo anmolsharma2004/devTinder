@@ -154,7 +154,28 @@ app.get("/userGet", async(req, res) => {
 
     try {
         const user = await UserModel.find({email: userEmail});
-        res.send(user)
+        if (user.length == 0) {
+            res.status(400)
+               .send("No users")
+        }
+        else {
+            res.send(user)
+        }
+        
+    }
+    catch(err){
+        res.status(401)
+           .send("Something went wrong")
+    }
+
+})
+
+
+app.get("/feed", async(req, res) => {
+
+
+    try {
+        const users = await UserModel.find({});
     }
     catch(err){
         res.status(401)
