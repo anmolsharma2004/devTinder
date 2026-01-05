@@ -153,7 +153,7 @@ app.get("/userGet", async(req, res) => {
     const userEmail = req.body.emailID;
 
     try {
-        const user = await UserModel.find({email: userEmail});
+        const user = await UserModel.findOne({email: userEmail});
         if (user.length == 0) {
             res.status(400)
                .send("No users")
