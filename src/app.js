@@ -184,6 +184,19 @@ app.get("/feed", async(req, res) => {
 
 })
 
+app.delete("/user", async (req, res) => {
+    const userID = req.body.userID
+    try{
+        const user = await UserModel.findByIdAndDelete(userID)
+        // const user = await UserModel.findByIdAndDelete({ _id : userID })
+        res.send("User deleted successfully")
+    }
+    catch(err) {
+        res.status(401)
+           .send("Something went wrong")
+    }
+})
+
 //  ! Handling errors
 
 app.use('/', (err, req, res, next) => {
