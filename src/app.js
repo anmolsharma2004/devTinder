@@ -153,7 +153,7 @@ app.get("/userGet", async(req, res) => {
     const userEmail = req.body.emailID;
 
     try {
-        const user = await UserModel.findOne({email: userEmail});
+        const user = await UserModel.findOne({emailID: userEmail});
         if (!user) {
             res.status(400)
                .send("No users")
@@ -182,6 +182,18 @@ app.get("/feed", async(req, res) => {
            .send("Something went wrong")
     }
 
+})
+
+app.patch("/user", async(req, res) => {
+    const userID = req.body.userID;
+    const data = req.body;
+    try {
+        await UserModel.findByIdAndUpdate({_id : userID}, data);
+    }
+    catch(err){
+        res.status(401)
+           .send("Something went wrong")
+    }
 })
 
 app.delete("/user", async (req, res) => {
