@@ -1,12 +1,14 @@
 const express = require("express");
 
-const {validateSignUpData} = require("./utils/validation")
+const { validateSignUpData } = require("./utils/validation")
 
-const {connectDB} = require("./config/database")
+const { connectDB } = require("./config/database")
 
 const UserModel = require("./models/user")
 
 const { adminAuth } = require("./middlewares/auth")
+
+const bcrypt = require("bcrypt")
 
 const app = express();
 app.use(express.json());
@@ -32,8 +34,8 @@ app.use('/hello', (req, res) => {
 // * This will specifically match only the GET HTTP Method API calls to /user 
 app.get('/user', (req, res) => {
     res.send({
-        "firstName" : "Anmol",
-        "lastName" : "Sharma"
+        "firstName": "Anmol",
+        "lastName": "Sharma"
     })
 })
 
@@ -92,11 +94,11 @@ app.get('/user/:userID/:name/:password', (req, res) => {
 // ! Multiple route Handlers
 app.use('/users',
     (req, res, next) => {
-        
+
         console.log("rh1")
         // res.send("rh1")
         next();
-        
+
     },
     (req, res) => {
         console.log("rh2")
@@ -130,86 +132,101 @@ app.get('/admin/deleteUser', (req, res) => {
 
 // ! sign-up
 app.post("/signup", async (req, res) => {
-    // dummy data
 
-    validateSignUpData(req)
-    
-    const userObj = new UserModel(
-        // {
-        // firstName : "ANmol",
-        // lastName : "Sharma",
-        // email: "anmol@gmail.com",
-        // password : "Anmol123"
-        // }
-        req.body
-    );
-    
-    //  creating a new instance of the UserModel model
-    const user = new UserModel(userObj)
+    try {
 
-    //  saving the userObj in the database
-    await user.save();
+        // Validation of data
+        validateSignUpData(req)
 
-    res.send("User added successfully")
+        const {password} = req.body
+        // Encryption of password
+        const passwordHash = await bcrypt.hash(password, 10)
+
+        const userObj = new UserModel(
+            // dummy data
+            // {
+            // firstName : "ANmol",
+            // lastName : "Sharma",
+            // email: "anmol@gmail.com",
+            // password : "Anmol123"
+            // }
+            req.body
+        );
+
+        //  creating a new instance of the UserModel model
+        const user = new UserModel({
+            firstName, lastName, emailID, password:passwordHash
+        })
+
+        //  saving the userObj in the database
+        await user.save();
+
+        res.send("User added successfully")
+    }
+    catch (err) {
+        res.status(401)
+            .send("Something went wrong" + err.message)
+    }
+
 });
 
-app.get("/userGet", async(req, res) => {
+app.get("/userGet", async (req, res) => {
     const userEmail = req.body.emailID;
 
     try {
-        const user = await UserModel.findOne({emailID: userEmail});
+        const user = await UserModel.findOne({ emailID: userEmail });
         if (!user) {
             res.status(400)
-               .send("No users")
+                .send("No users")
         }
         else {
             res.send(user)
         }
-        
+
     }
-    catch(err){
+    catch (err) {
         res.status(401)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 
 })
 
 
-app.get("/feed", async(req, res) => {
+app.get("/feed", async (req, res) => {
 
 
     try {
         const users = await UserModel.find({});
     }
-    catch(err){
+    catch (err) {
         res.status(401)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 
 })
 
-app.patch("/user", async(req, res) => {
+app.patch("/user", async (req, res) => {
     const userID = req.body.userID;
     const data = req.body;
     try {
-        await UserModel.findByIdAndUpdate({_id : userID}, data);
+        await UserModel.findByIdAndUpdate({ _id: userID }, data);
     }
-    catch(err){
+    catch (err) {
         res.status(401)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 })
 
 app.delete("/user", async (req, res) => {
     const userID = req.body.userID
-    try{
+    try {
         const user = await UserModel.findByIdAndDelete(userID)
         // const user = await UserModel.findByIdAndDelete({ _id : userID })
         res.send("User deleted successfully")
     }
-    catch(err) {
+    catch (err) {
         res.status(401)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 })
 
@@ -219,7 +236,7 @@ app.use('/', (err, req, res, next) => {
     //  always use try and catch block while writing logic
     if (err) {
         res.status(500)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 })
 
@@ -240,7 +257,7 @@ connectDB()
     .catch((err) => {
         console.log(err)
         console.log("Database cannot be connnected");
-    }); 
+    });
 
 
 
