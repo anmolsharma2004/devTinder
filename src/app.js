@@ -170,6 +170,25 @@ app.post("/signup", async (req, res) => {
 
 });
 
+app.post("/login", async(req, res) => {
+    try{
+        const {emailID, password} = req.body
+
+        // first we will check if the user with the emailID is present or not
+        const user = await UserModel.findOne({emailID:emailID})
+        if (!user) throw new error("User not present")
+
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
+        if (isPasswordValid) res.send("Login successful")
+        else throw new Error("Wrong info")
+    }
+    catch(err){
+        res.status(401)
+           .send("Something went wrong")
+    }
+})
+
 app.get("/userGet", async (req, res) => {
     const userEmail = req.body.emailID;
 
