@@ -1,5 +1,7 @@
 const express = require("express");
 
+const {validateSignUpData} = require("./utils/validation")
+
 const {connectDB} = require("./config/database")
 
 const UserModel = require("./models/user")
@@ -129,6 +131,8 @@ app.get('/admin/deleteUser', (req, res) => {
 // ! sign-up
 app.post("/signup", async (req, res) => {
     // dummy data
+
+    validateSignUpData(req)
     
     const userObj = new UserModel(
         // {
