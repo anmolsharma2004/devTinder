@@ -176,12 +176,12 @@ app.post("/login", async(req, res) => {
 
         // first we will check if the user with the emailID is present or not
         const user = await UserModel.findOne({emailID:emailID})
-        if (!user) throw new error("User not present")
+        if (!user) throw new Error("Invalid credentials")
 
         const isPasswordValid = await bcrypt.compare(password, user.password)
 
         if (isPasswordValid) res.send("Login successful")
-        else throw new Error("Wrong info")
+        else throw new Error("Invalid credentials")
     }
     catch(err){
         res.status(401)
@@ -196,7 +196,7 @@ app.get("/userGet", async (req, res) => {
         const user = await UserModel.findOne({ emailID: userEmail });
         if (!user) {
             res.status(400)
-                .send("No users")
+                .send("Invalid credentials")
         }
         else {
             res.send(user)
