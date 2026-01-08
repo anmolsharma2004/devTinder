@@ -141,7 +141,7 @@ app.post("/signup", async (req, res) => {
         // Validation of data
         validateSignUpData(req)
 
-        const {password} = req.body
+        const { password } = req.body
         // Encryption of password
         const passwordHash = await bcrypt.hash(password, 10)
 
@@ -158,7 +158,7 @@ app.post("/signup", async (req, res) => {
 
         //  creating a new instance of the UserModel model
         const user = new UserModel({
-            firstName, lastName, emailID, password:passwordHash
+            firstName, lastName, emailID, password: passwordHash
         })
 
         //  saving the userObj in the database
@@ -173,12 +173,12 @@ app.post("/signup", async (req, res) => {
 
 });
 
-app.post("/login", async(req, res) => {
-    try{
-        const {emailID, password} = req.body
+app.post("/login", async (req, res) => {
+    try {
+        const { emailID, password } = req.body
 
         // first we will check if the user with the emailID is present or not
-        const user = await UserModel.findOne({emailID:emailID})
+        const user = await UserModel.findOne({ emailID: emailID })
         if (!user) throw new Error("Invalid credentials")
 
         const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -193,26 +193,38 @@ app.post("/login", async(req, res) => {
         }
         else throw new Error("Invalid credentials")
     }
-    catch(err){
+    catch (err) {
         res.status(401)
-           .send("Something went wrong")
+            .send("Something went wrong")
     }
 })
 
-app.get("/profile", async(req, res) => {
-    const cookies = req.cookies
+app.get("/profile", async (req, res) => {
+    try {
+        const cookies = req.cookies
 
-    const {token} = cookies
+        const { token } = cookies
 
-    // validate the token
-    const decodedMessage = await jwt.verify(token, "DEV@tinder$123")
-    console.log(decodedMessage)
+        // validate the token
+        const decodedMessage = await jwt.verify(token, "DEV@tinder$123")
+        console.log(decodedMessage)
 
-    const {_id} = decodedMessage
-    console.log("Logged in user is "+ _id)
+        const { _id } = decodedMessage
 
-    // console.log(cookies)
-    res.send("Reading cookies")
+        const user = await UserModel.findById(_id)
+        console.log("Logged in user is " + user)
+
+        if (!user){
+            throw new Error("not a valid user")
+        }
+
+        // console.log(cookies)
+        res.send("Reading cookies")
+    }
+    catch (err) {
+        res.status(401)
+            .send("Invalid token")
+    }
 })
 
 app.get("/userGet", async (req, res) => {
