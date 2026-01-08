@@ -201,6 +201,18 @@ app.post("/login", async(req, res) => {
 
 app.get("/profile", async(req, res) => {
     const cookies = req.cookies
+
+    const {token} = cookies
+
+    // validate the token
+    const decodedMessage = await jwt.verify(token, "DEV@tinder$123")
+    console.log(decodedMessage)
+
+    const {_id} = decodedMessage
+    console.log("Logged in user is "+ _id)
+
+    // console.log(cookies)
+    res.send("Reading cookies")
 })
 
 app.get("/userGet", async (req, res) => {
