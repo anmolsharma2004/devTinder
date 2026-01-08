@@ -8,10 +8,13 @@ const UserModel = require("./models/user")
 
 const { adminAuth } = require("./middlewares/auth")
 
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken")
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser())
 
 // ! routes order matter a lot
 // app.use('/test', (req, res) => {
@@ -180,13 +183,24 @@ app.post("/login", async(req, res) => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password)
 
-        if (isPasswordValid) res.send("Login successful")
+        if (isPasswordValid) {
+            // Create a JWT Token
+            const token = jwt.sign({ _id: user._id }, "DEV@tinder$123")
+
+            // Add the token to the cookie and send it back to the user
+            res.cookie("token", token)
+            res.send("Login successful")
+        }
         else throw new Error("Invalid credentials")
     }
     catch(err){
         res.status(401)
            .send("Something went wrong")
     }
+})
+
+app.get("/profile", async(req, res) => {
+    const cookies = req.cookies
 })
 
 app.get("/userGet", async (req, res) => {
