@@ -6,7 +6,7 @@ const { connectDB } = require("./config/database")
 
 const UserModel = require("./models/user")
 
-const { adminAuth } = require("./middlewares/auth")
+const { adminAuth, userAuth } = require("./middlewares/auth")
 
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
@@ -134,7 +134,7 @@ app.get('/admin/deleteUser', (req, res) => {
 
 
 // ! sign-up
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res) => { 
 
     try {
 
@@ -173,6 +173,7 @@ app.post("/signup", async (req, res) => {
 
 });
 
+// ! login
 app.post("/login", async (req, res) => {
     try {
         const { emailID, password } = req.body
@@ -185,7 +186,7 @@ app.post("/login", async (req, res) => {
 
         if (isPasswordValid) {
             // Create a JWT Token
-            const token = jwt.sign({ _id: user._id }, "DEV@tinder$123")
+            
 
             // Add the token to the cookie and send it back to the user
             res.cookie("token", token)
@@ -199,19 +200,22 @@ app.post("/login", async (req, res) => {
     }
 })
 
-app.get("/profile", async (req, res) => {
-    try {
-        const cookies = req.cookies
 
-        const { token } = cookies
+app.get("/profile", userAuth, async (req, res) => {
+    try {
+        // const cookies = req.cookies
+
+        // const { token } = cookies
 
         // validate the token
-        const decodedMessage = await jwt.verify(token, "DEV@tinder$123")
-        console.log(decodedMessage)
+        // const decodedMessage = await jwt.verify(token, "DEV@tinder$123")
+        // console.log(decodedMessage)
 
-        const { _id } = decodedMessage
+        // const { _id } = decodedMessage
 
-        const user = await UserModel.findById(_id)
+        // const user = await UserModel.findById(_id)
+
+        const user = req.user
         console.log("Logged in user is " + user)
 
         if (!user){
