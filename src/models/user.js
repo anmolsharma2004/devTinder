@@ -1,20 +1,30 @@
 const mongoose = require("mongoose")
+const { isLowercase } = require("validator")
 
 const userSchema = new mongoose.Schema({
     firstName : {
-        type : String
+        type : String,
+        minLength : 4,
+        maxLength : 10
     },
     lastName : {
         type : String
     },
     emailID : {
-        type : String
+        type : String,
+        lowercase : true,
+        trim : true,
+        required : true,
+        unique : true
     },
     password : {
-        type : String
+        type : String,
+        required : true
     },
     age : {
-        type : Number
+        type : Number,
+        min : 18,
+        max : 40
     }
 })
 
