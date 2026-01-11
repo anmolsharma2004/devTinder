@@ -134,7 +134,7 @@ app.get('/admin/deleteUser', (req, res) => {
 
 
 // ! sign-up
-app.post("/signup", async (req, res) => { 
+app.post("/signup", async (req, res) => {
 
     try {
 
@@ -220,7 +220,7 @@ app.get("/profile", userAuth, async (req, res) => {
         const user = req.user
         console.log("Logged in user is " + user)
 
-        if (!user){
+        if (!user) {
             throw new Error("not a valid user")
         }
 
@@ -271,11 +271,27 @@ app.get("/feed", async (req, res) => {
 app.patch("/user", async (req, res) => {
     const userID = req.body.userID;
     const data = req.body;
+
+
     try {
+        const allowed_updates = [
+            "firstName", "lastName", "password", "age", "gender"
+        ] 
+        const isAllowed = Object.keys(data).every((k) => {
+            allowed_updates.includes(k)
+        })
+        if (data?.skills.length > 10) {
+            throw new Error("Skills cannot be more than 10")
+        }
+        if (!isAllowed) {
+            res.status(400)
+                .send("Updates not allowed")
+        }
+
         await UserModel.findByIdAndUpdate({ _id: userID }, data,
             {
-                runValidators : true,
-                returnDocument : "before"
+                runValidators: true,
+                returnDocument: "before"
             }
         );
     }
